@@ -7,7 +7,6 @@
 // Execute `rustlings hint traits1` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
 trait AppendBar {
     fn append_bar(self) -> Self;
@@ -15,6 +14,10 @@ trait AppendBar {
 
 impl AppendBar for String {
     // TODO: Implement `AppendBar` for type `String`.
+    fn append_bar(self) -> Self {
+        // 修改处：使用 format! 宏将原字符串和 "Bar" 拼接起来
+        format!("{}{}", self, "Bar")
+    }
 }
 
 fn main() {

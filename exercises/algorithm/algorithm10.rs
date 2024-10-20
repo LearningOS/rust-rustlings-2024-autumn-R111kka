@@ -2,7 +2,6 @@
 	graph
 	This problem requires you to implement a basic graph functio
 */
-// I AM NOT DONE
 
 use std::collections::{HashMap, HashSet};
 use std::fmt;
@@ -30,6 +29,24 @@ impl Graph for UndirectedGraph {
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
+        let (node1, node2, weight) = edge;
+        self.add_node(node1);
+        self.add_node(node2);
+        // 添加边node1 -> node2
+        self.adjacency_table.entry(node1.to_string()).and_modify(|edges| {
+            // 检查是否已经存在这条边，以避免重复添加
+            if !edges.iter().any(|(n, _)| n == node2) {
+                edges.push((node2.to_string(), weight));
+            }
+        });
+
+        // 添加边node2 -> node1（因为是无向图）
+        self.adjacency_table.entry(node2.to_string()).and_modify(|edges| {
+            // 检查是否已经存在这条边，以避免重复添加
+            if !edges.iter().any(|(n, _)| n == node1) {
+                edges.push((node1.to_string(), weight));
+            }
+        });
     }
 }
 pub trait Graph {
@@ -38,10 +55,34 @@ pub trait Graph {
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
     fn add_node(&mut self, node: &str) -> bool {
         //TODO
-		true
+        if self.contains(node.clone()) {
+            false
+        } else {
+            // println!("{:?}", node);
+            self.adjacency_table_mutable().entry(node.to_string().clone()).or_insert_with(Vec::new);
+            true
+        }
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
+        let (node1, node2, weight) = edge;
+        self.add_node(node1);
+        self.add_node(node2);
+        // 添加边node1 -> node2
+        self.adjacency_table_mutable().entry(node1.to_string()).and_modify(|edges| {
+            // 检查是否已经存在这条边，以避免重复添加
+            if !edges.iter().any(|(n, _)| n == node2) {
+                edges.push((node2.to_string(), weight));
+            }
+        });
+
+        // 添加边node2 -> node1（因为是无向图）
+        self.adjacency_table_mutable().entry(node2.to_string()).and_modify(|edges| {
+            // 检查是否已经存在这条边，以避免重复添加
+            if !edges.iter().any(|(n, _)| n == node1) {
+                edges.push((node1.to_string(), weight));
+            }
+        });
     }
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
@@ -54,6 +95,7 @@ pub trait Graph {
         for (from_node, from_node_neighbours) in self.adjacency_table() {
             for (to_node, weight) in from_node_neighbours {
                 edges.push((from_node, to_node, *weight));
+                // println!("{:?} {:?} {:?}", from_node, to_node, weight);
             }
         }
         edges
